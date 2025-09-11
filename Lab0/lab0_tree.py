@@ -7,7 +7,7 @@ from sklearn.metrics import classification_report, accuracy_score
 
 # Load data e print prime 5 righe
 df = pd.read_csv("Iris.csv")
-print(df.shape)
+print(df.head(5))
 
 # Scelgo le feature e la y
 X = df[["SepalLengthCm", "SepalWidthCm", "PetalLengthCm","PetalWidthCm"]]
