@@ -1,3 +1,3 @@
 # deposito_venanzi
 
-Repository contenente i laboratori dell'accademy.
+In questa repository sono caricati tutti i laboratori dell'academy.
