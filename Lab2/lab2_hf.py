@@ -1,9 +1,11 @@
-import os
 from openai import AzureOpenAI
+import os
+from dotenv_vault import load_dotenv
 
-subscription_key = ""
+load_dotenv()
 
-endpoint = "https://aiacademylab.cognitiveservices.azure.com/"
+subscription_key = os.getenv("AZURE_OPENAI_KEY")
+endpoint = os.getenv("GPT_ENDPOINT")
 model_name = "gpt-4o"
 deployment = "gpt-4o"
 api_version = "2024-12-01-preview"
