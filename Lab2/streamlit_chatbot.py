@@ -1,5 +1,20 @@
 import streamlit as st
 from openai import AzureOpenAI
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
+# Aggiungo il decorator alla funzione get_chat_completion
+@retry(
+    reraise=True,
+    stop=stop_after_attempt(5),  # Retry up to n=5 times
+    wait=wait_exponential(multiplier=1, min=2, max=10),  # Wait times between retries increase exponentially
+    retry=retry_if_exception_type(Exception),  
+)
+def get_chat_completion(client, model_name, messages):
+    return client.chat.completions.create(
+        model=model_name,
+        messages=messages,
+        stream=True,
+    )
 
 st.title("AzureOpenAI chatbot ⌨️​")
 
@@ -59,17 +74,13 @@ with tab1:
 
         with st.chat_message("assistant"):
             try:
-                stream = client.chat.completions.create(
-                    model=model_name,
-                    messages=[
-                        {"role": m["role"], "content": m["content"]}
-                        for m in st.session_state.messages
-                    ],
-                    stream=True,
-                )
+                stream = get_chat_completion(
+                    client,
+                    model_name,
+                    [{"role": m["role"], "content": m["content"]} for m in st.session_state.messages]                )
                 response = st.write_stream(stream)
             except Exception as e:
-                response = f"Error from Azure OpenAI: {e}"
+                response = f"Error from Azure OpenAI after retries: {e}"
                 st.error(response)
 
         st.session_state.messages.append({"role": "assistant", "content": response})
